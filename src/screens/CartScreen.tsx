@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View, Alert } from 'react-native';
 
 import { useAppState } from '../state/AppStateContext';
 import { colors, spacing } from '../theme';
@@ -11,6 +11,12 @@ type Props = NativeStackScreenProps<HomeStackParamList, 'Cart'>;
 export function CartScreen({ navigation }: Props) {
   const { cart, clearCart, removeFromCart } = useAppState();
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const handlePlaceOrder = () => {
+    // clear the cart and show a confirmation; do not navigate anywhere
+    clearCart();
+    Alert.alert('Order placed', 'Your order has been placed successfully.');
+  };
 
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
@@ -30,10 +36,10 @@ export function CartScreen({ navigation }: Props) {
             <View style={{ flex: 1 }}>
               <Text style={styles.itemTitle}>{item.name}</Text>
               <Text style={styles.itemMeta}>
-                {item.quantity} x ${item.price.toFixed(2)}
+                {item.quantity} x ₹{item.price.toLocaleString('en-IN')}
               </Text>
             </View>
-            <Text style={styles.itemTotal}>${(item.price * item.quantity).toFixed(2)}</Text>
+            <Text style={styles.itemTotal}>₹{(item.price * item.quantity).toLocaleString('en-IN')}</Text>
           </View>
           <Pressable style={styles.removeButton} onPress={() => removeFromCart(item.id)}>
             <Text style={styles.removeButtonText}>Remove</Text>
@@ -43,11 +49,11 @@ export function CartScreen({ navigation }: Props) {
 
       <View style={styles.totalCard}>
         <Text style={styles.totalLabel}>Order total</Text>
-        <Text style={styles.totalValue}>${total.toFixed(2)}</Text>
+        <Text style={styles.totalValue}>₹{total.toLocaleString('en-IN')}</Text>
       </View>
 
-      <Pressable style={styles.primaryButton} onPress={() => navigation.reset({ index: 0, routes: [{ name: 'HomeList' }] })}>
-        <Text style={styles.primaryButtonText}>Checkout and return Home</Text>
+      <Pressable style={styles.primaryButton} onPress={handlePlaceOrder}>
+        <Text style={styles.primaryButtonText}>Place order</Text>
       </Pressable>
 
       <Pressable style={styles.secondaryButton} onPress={() => navigation.goBack()}>

@@ -10,12 +10,11 @@ type Props = DrawerScreenProps<ProfileDrawerParamList, 'MyOrders'>;
 export function MyOrdersScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>My Orders</Text>
       {restaurants.slice(0, 2).map((order) => (
         <View key={order.id} style={styles.card}>
           <Text style={styles.cardTitle}>{order.name}</Text>
           <Text style={styles.cardText}>
-            Delivered • {order.category} • ${order.price.toFixed(2)}
+            Delivered • {order.category} • ₹{order.price.toLocaleString('en-IN')}
           </Text>
         </View>
       ))}

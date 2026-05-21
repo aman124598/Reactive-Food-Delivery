@@ -1,15 +1,11 @@
-import type { DrawerScreenProps } from '@react-navigation/drawer';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '../../theme';
 import type { ProfileDrawerParamList } from '../../types';
 
-type Props = DrawerScreenProps<ProfileDrawerParamList, 'Help'>;
-
 export function HelpScreen() {
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>Help</Text>
       <View style={styles.card}>
         <Text style={styles.cardTitle}>How does navigation work?</Text>
         <Text style={styles.cardText}>

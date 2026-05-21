@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Linking from 'expo-linking';
+import Constants from 'expo-constants';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { restaurants } from '../data/restaurants';
@@ -17,6 +18,7 @@ type AppStateContextValue = {
   signIn: (input?: { name?: string; email?: string }) => void;
   signOut: () => void;
   addToCart: (restaurant: Restaurant) => void;
+  decrementFromCart: (restaurantId: string) => void;
   removeFromCart: (restaurantId: string) => void;
   clearCart: () => void;
   setPendingDeepLink: (value: RestaurantDeepLink | null) => void;
@@ -28,7 +30,7 @@ const CART_KEY = 'foodapp:cart';
 const ONBOARDING_KEY = 'foodapp:onboarding';
 
 const DEFAULT_USER: AuthUser = {
-  name: 'Aman Khan',
+  name: 'Aman',
   email: 'aman@foodapp.dev',
   avatar: 'https://i.pravatar.cc/300?img=12',
 };
@@ -76,6 +78,22 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
     let cancelled = false;
 
     const hydrate = async () => {
+      // In development or when running from localhost (Expo debugger), avoid
+      // persisting data between runs. This clears saved AsyncStorage keys so
+      // the app starts fresh on each reload and the splash/onboarding shows.
+      const isDebuggerLocalhost = typeof Constants.manifest?.debuggerHost === 'string' &&
+        Constants.manifest.debuggerHost.includes('localhost');
+
+      if (__DEV__ || isDebuggerLocalhost) {
+        try {
+          await AsyncStorage.multiRemove([AUTH_KEY, CART_KEY, ONBOARDING_KEY]);
+        } catch {
+          // ignore
+        }
+        setHydrated(true);
+        return;
+      }
+
       const [authJson, cartJson, onboardingJson] = await Promise.all([
         AsyncStorage.getItem(AUTH_KEY),
         AsyncStorage.getItem(CART_KEY),
@@ -112,6 +130,7 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
+    if (__DEV__) return; // skip persistence in development/localhost
     void AsyncStorage.setItem(
       AUTH_KEY,
       JSON.stringify({ isAuthenticated, user }),
@@ -120,11 +139,13 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!hydrated) return;
+    if (__DEV__) return; // skip persistence in development/localhost
     void AsyncStorage.setItem(CART_KEY, JSON.stringify(cart));
   }, [cart, hydrated]);
 
   useEffect(() => {
     if (!hydrated) return;
+    if (__DEV__) return; // skip persistence in development/localhost
     void AsyncStorage.setItem(ONBOARDING_KEY, hasCompletedOnboarding ? 'true' : 'false');
   }, [hasCompletedOnboarding, hydrated]);
 
@@ -172,6 +193,14 @@ export function AppStateProvider({ children }: { children: React.ReactNode }) {
       },
       addToCart: (restaurant) => {
         setCart((current) => upsertCartItem(current, restaurant));
+      },
+      decrementFromCart: (restaurantId) => {
+        setCart((current) => {
+          const existing = current.find((c) => c.id === restaurantId);
+          if (!existing) return current;
+          if (existing.quantity <= 1) return current.filter((c) => c.id !== restaurantId);
+          return current.map((c) => (c.id === restaurantId ? { ...c, quantity: c.quantity - 1 } : c));
+        });
       },
       removeFromCart: (restaurantId) => {
         setCart((current) => current.filter((item) => item.id !== restaurantId));

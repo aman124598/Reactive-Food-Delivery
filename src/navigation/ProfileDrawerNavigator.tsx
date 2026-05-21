@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList } from '@react-navigation/drawer';
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { createDrawerNavigator, DrawerContentScrollView, DrawerItem, DrawerItemList, DrawerContentComponentProps } from '@react-navigation/drawer';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors, spacing } from '../theme';
 import type { ProfileDrawerParamList } from '../types';
@@ -12,7 +12,7 @@ import { SettingsScreen } from '../screens/profile/SettingsScreen';
 
 const Drawer = createDrawerNavigator<ProfileDrawerParamList>();
 
-function CustomDrawerContent(props: React.ComponentProps<typeof DrawerContentScrollView>) {
+function CustomDrawerContent(props: DrawerContentComponentProps) {
   const { user, signOut } = useAppState();
 
   return (
@@ -40,12 +40,20 @@ export function ProfileDrawerNavigator() {
   return (
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        headerShown: false,
+      screenOptions={({ navigation, route }) => ({
+        headerShown: true,
+        headerTitleAlign: 'left',
+        headerStyle: { backgroundColor: colors.background },
+        headerLeft: () =>
+          route.name !== 'ProfileHome' ? (
+            <Pressable onPress={() => navigation.navigate('ProfileHome' as never)} style={{ padding: 8, marginLeft: 8 }}>
+              <MaterialCommunityIcons name="arrow-left" size={20} color={colors.text} />
+            </Pressable>
+          ) : null,
         drawerActiveTintColor: colors.primary,
         drawerInactiveTintColor: colors.text,
         drawerStyle: { backgroundColor: colors.background, width: 280 },
-      }}
+      })}
     >
       <Drawer.Screen
         name="ProfileHome"

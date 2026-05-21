@@ -18,13 +18,6 @@ export function ProfileHomeScreen({ navigation }: Props) {
         <Text style={styles.email}>{user?.email}</Text>
       </View>
 
-      <View style={styles.card}>
-        <Text style={styles.cardTitle}>Profile hub</Text>
-        <Text style={styles.cardText}>
-          Open the drawer to reach My Orders, Settings, Help, and Logout.
-        </Text>
-      </View>
-
       <Pressable style={styles.button} onPress={() => navigation.openDrawer()}>
         <Text style={styles.buttonText}>Open drawer</Text>
       </Pressable>

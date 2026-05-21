@@ -7,7 +7,7 @@ import { colors, spacing } from '../theme';
 import type { MainTabParamList } from '../types';
 import { HomeStackNavigator } from './HomeStackNavigator';
 import { ProfileDrawerNavigator } from './ProfileDrawerNavigator';
-import { OrdersScreen } from '../screens/OrdersScreen';
+import { CartScreen } from '../screens/CartScreen';
 import { SearchScreen } from '../screens/SearchScreen';
 import { useAppState } from '../state/AppStateContext';
 
@@ -49,7 +49,7 @@ export function MainTabsNavigator() {
           const iconMap: Record<string, keyof typeof MaterialCommunityIcons.glyphMap> = {
             Home: 'home-variant',
             Search: 'magnify',
-            Orders: 'receipt-text-outline',
+            Cart: 'cart-outline',
             Profile: 'account-circle-outline',
           };
 
@@ -67,8 +67,8 @@ export function MainTabsNavigator() {
       />
       <Tab.Screen name="Search" component={SearchScreen} />
       <Tab.Screen
-        name="Orders"
-        component={OrdersScreen}
+        name="Cart"
+        component={CartScreen}
         options={{
           tabBarBadge: cartCount > 0 ? cartCount : undefined,
         }}

@@ -5,6 +5,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 
 import { restaurants } from '../data/restaurants';
 import { colors, spacing } from '../theme';
+import RestaurantCard from '../components/RestaurantCard';
 import type { MainTabParamList } from '../types';
 
 type Props = BottomTabScreenProps<MainTabParamList, 'Search'>;
@@ -28,31 +29,44 @@ export function SearchScreen({ navigation }: Props) {
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Search restaurants"
+          placeholder="Search restaurants or cuisines"
           placeholderTextColor={colors.muted}
           style={styles.searchInput}
         />
+        {query.length > 0 && (
+          <Pressable onPress={() => setQuery('')}>
+            <MaterialCommunityIcons name="close" size={18} color={colors.muted} />
+          </Pressable>
+        )}
       </View>
 
-      {filtered.map((restaurant) => (
-        <Pressable
-          key={restaurant.id}
-          style={styles.rowCard}
-          onPress={() =>
-            navigation.navigate('Home', {
-              screen: 'RestaurantDetail',
-              params: {
-                restaurantId: restaurant.id,
-                restaurantName: restaurant.name,
-                price: restaurant.price,
-              },
-            })
-          }
-        >
-          <Text style={styles.rowTitle}>{restaurant.name}</Text>
-          <Text style={styles.rowMeta}>{restaurant.category}</Text>
-        </Pressable>
-      ))}
+      {query.trim() === '' ? (
+        <View style={{ gap: 12 }}>
+          <Text style={styles.sectionTitle}>Recent searches</Text>
+          <View style={styles.rowCard}>
+            <Text style={styles.rowTitle}>Pizza near me</Text>
+          </View>
+          <View style={styles.rowCard}>
+            <Text style={styles.rowTitle}>Healthy bowls</Text>
+          </View>
+        </View>
+      ) : (
+        <View style={{ gap: 12 }}>
+          {filtered.map((restaurant) => (
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              compact
+              onPress={() =>
+                navigation.navigate('Home', {
+                  screen: 'RestaurantDetail',
+                  params: { restaurantId: restaurant.id, restaurantName: restaurant.name, price: restaurant.price },
+                })
+              }
+            />
+          ))}
+        </View>
+      )}
     </ScrollView>
   );
 }
@@ -93,5 +107,11 @@ const styles = StyleSheet.create({
   rowMeta: {
     marginTop: 4,
     color: colors.muted,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: colors.text,
+    marginBottom: 6,
   },
 });

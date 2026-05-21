@@ -11,7 +11,7 @@ type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 export function LoginScreen() {
   const { signIn } = useAppState();
-  const [name, setName] = useState('Aman Khan');
+  const [name, setName] = useState('Aman');
   const [email, setEmail] = useState('aman@foodapp.dev');
 
   const canContinue = useMemo(() => name.trim().length > 1 && email.trim().includes('@'), [email, name]);

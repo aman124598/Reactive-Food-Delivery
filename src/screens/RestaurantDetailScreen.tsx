@@ -10,9 +10,11 @@ import type { HomeStackParamList } from '../types';
 type Props = NativeStackScreenProps<HomeStackParamList, 'RestaurantDetail'>;
 
 export function RestaurantDetailScreen({ navigation, route }: Props) {
-  const { addToCart } = useAppState();
+  const { addToCart, decrementFromCart, cart } = useAppState();
   const restaurant =
     restaurants.find((item) => item.id === route.params.restaurantId) ?? restaurants[0];
+
+  const cartItem = cart.find((c) => c.id === restaurant.id);
 
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
@@ -34,7 +36,7 @@ export function RestaurantDetailScreen({ navigation, route }: Props) {
         <View style={styles.infoRow}>
           <View style={styles.infoPill}>
             <Text style={styles.infoLabel}>Price</Text>
-            <Text style={styles.infoValue}>${(route.params.price ?? restaurant.price).toFixed(2)}</Text>
+            <Text style={styles.infoValue}>₹{(route.params.price ?? restaurant.price).toLocaleString('en-IN')}</Text>
           </View>
           <View style={styles.infoPill}>
             <Text style={styles.infoLabel}>ETA</Text>
@@ -42,8 +44,26 @@ export function RestaurantDetailScreen({ navigation, route }: Props) {
           </View>
         </View>
 
-        <Pressable style={styles.primaryButton} onPress={() => addToCart(restaurant)}>
-          <Text style={styles.primaryButtonText}>Add to cart</Text>
+        {cartItem ? (
+          <View style={{ marginTop: 8 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+              <Pressable style={styles.qtyBtn} onPress={() => decrementFromCart(restaurant.id)}>
+                <Text style={styles.qtyBtnText}>−</Text>
+              </Pressable>
+              <Text style={styles.addedText}>{cartItem.quantity} added</Text>
+              <Pressable style={styles.qtyBtn} onPress={() => addToCart(restaurant)}>
+                <Text style={styles.qtyBtnText}>+</Text>
+              </Pressable>
+            </View>
+          </View>
+        ) : (
+          <Pressable style={styles.primaryButton} onPress={() => addToCart(restaurant)}>
+            <Text style={styles.primaryButtonText}>Add to cart</Text>
+          </Pressable>
+        )}
+
+        <Pressable style={styles.trackButton} onPress={() => navigation.navigate('DeliveryTracking', { restaurantId: restaurant.id })}>
+          <Text style={styles.trackButtonText}>Track delivery</Text>
         </Pressable>
 
         <Pressable style={styles.secondaryButton} onPress={() => navigation.navigate('Cart')}>
@@ -154,6 +174,34 @@ const styles = StyleSheet.create({
     color: colors.primaryDark,
     fontWeight: '700',
     fontSize: 16,
+  },
+  trackButton: {
+    marginTop: 8,
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: 'center',
+    backgroundColor: colors.primaryDark,
+  },
+  trackButtonText: {
+    color: '#fff',
+    fontWeight: '800',
+    fontSize: 16,
+  },
+  qtyBtn: {
+    width: 38,
+    height: 38,
+    borderRadius: 10,
+    backgroundColor: colors.surfaceAlt,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  qtyBtnText: {
+    fontSize: 20,
+    fontWeight: '800',
+  },
+  addedText: {
+    fontWeight: '800',
+    color: colors.text,
   },
   backButton: {
     alignItems: 'center',

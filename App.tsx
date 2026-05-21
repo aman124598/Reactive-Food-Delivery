@@ -6,6 +6,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { AppStateProvider } from './src/state/AppStateContext';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { colors } from './src/theme';
 
 export default function App() {
   return (
@@ -13,7 +14,7 @@ export default function App() {
       <SafeAreaProvider>
         <AppStateProvider>
           <RootNavigator />
-          <StatusBar style="light" />
+          <StatusBar style="auto" backgroundColor={colors.background} />
         </AppStateProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>

@@ -1,13 +1,11 @@
-import type { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { restaurants } from '../data/restaurants';
 import { useAppState } from '../state/AppStateContext';
 import { colors } from '../theme';
+import RestaurantCard from '../components/RestaurantCard';
 import type { MainTabParamList } from '../types';
-
-type Props = BottomTabScreenProps<MainTabParamList, 'Orders'>;
 
 const recentOrders = restaurants.slice(0, 3);
 
@@ -29,14 +27,18 @@ export function OrdersScreen() {
         <Text style={styles.metricValue}>{cartCount}</Text>
       </View>
 
-      {recentOrders.map((order) => (
-        <View key={order.id} style={styles.orderCard}>
-          <Text style={styles.orderTitle}>{order.name}</Text>
-          <Text style={styles.orderMeta}>
-            {order.category} • ${order.price.toFixed(2)}
-          </Text>
-        </View>
-      ))}
+      <Text style={styles.sectionTitle}>Recent orders</Text>
+      <View style={{ gap: 12 }}>
+        {recentOrders.map((order) => (
+          <View key={order.id} style={styles.orderRow}>
+            <RestaurantCard restaurant={order} onPress={() => { }} />
+            <View style={styles.statusWrap}>
+              <Text style={styles.status}>Delivered</Text>
+              <Text style={styles.statusMeta}>{order.eta}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
     </ScrollView>
   );
 }
@@ -88,6 +90,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
+  orderRow: {
+    flexDirection: 'row',
+    gap: 12,
+    alignItems: 'center',
+  },
+  statusWrap: {
+    marginLeft: 8,
+    flex: 1,
+    justifyContent: 'center',
+  },
+  status: {
+    fontWeight: '800',
+    color: colors.primary,
+  },
+  statusMeta: {
+    marginTop: 6,
+    color: colors.muted,
+  },
   orderTitle: {
     fontSize: 17,
     fontWeight: '800',
@@ -96,5 +116,12 @@ const styles = StyleSheet.create({
   orderMeta: {
     marginTop: 4,
     color: colors.muted,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: colors.text,
+    marginTop: 12,
+    marginBottom: 6,
   },
 });

@@ -38,6 +38,7 @@ export type HomeStackParamList = {
     restaurantName?: string;
     price?: number;
   };
+  DeliveryTracking: { restaurantId?: string } | undefined;
   Cart: undefined;
 };
 
@@ -51,7 +52,7 @@ export type ProfileDrawerParamList = {
 export type MainTabParamList = {
   Home: NavigatorScreenParams<HomeStackParamList>;
   Search: undefined;
-  Orders: undefined;
+  Cart: undefined;
   Profile: NavigatorScreenParams<ProfileDrawerParamList>;
 };
 

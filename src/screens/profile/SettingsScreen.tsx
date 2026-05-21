@@ -9,7 +9,7 @@ export function SettingsScreen() {
 
   return (
     <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-      <Text style={styles.title}>Settings</Text>
+
       <View style={styles.card}>
         <Text style={styles.label}>Push notifications</Text>
         <Switch value={push} onValueChange={setPush} />
